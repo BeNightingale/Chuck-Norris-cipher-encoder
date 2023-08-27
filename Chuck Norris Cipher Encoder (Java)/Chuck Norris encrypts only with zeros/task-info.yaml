@@ -103,6 +103,62 @@ files:
       }
     }
   learner_created: false
+- name: src/chucknorris/Parser.java
+  visible: true
+  text: |
+    package chucknorris;
+
+    public class Parser {
+
+        private Parser() {
+            // do nothing
+        }
+
+        public static void showCharsAndTheirBytes(String input) {
+            System.out.println("The result:");
+            input.chars().forEach(c -> {
+                String bin = Integer.toBinaryString(c);
+                final int length = bin.length();
+                final int lenDif = 7 - length;
+                if (lenDif > 0) {
+                    bin = String.format("%s%s", "0".repeat(lenDif), bin);
+                }
+                System.out.println(Character.toString(c) + " = " + bin);
+            });
+        }
+    }
+  learner_created: true
+- name: src/chucknorris/IOUtil.java
+  visible: true
+  text: |
+    package chucknorris;
+
+    import java.util.Arrays;
+    import java.util.Scanner;
+
+    public class Util {
+        private Util() {
+            // nothing
+        }
+
+        public static String scanInput() {
+            System.out.println("Input string:");
+            Scanner scanner = new Scanner(System.in);
+            return scanner.nextLine();
+        }
+
+        public static String parseInputToSigns(String input) {
+            final String[] signs = input.split("");
+            final StringBuilder sb = new StringBuilder();
+            Arrays.stream(signs).forEach(x -> sb.append(x).append(" "));
+            sb.deleteCharAt(sb.length() - 1);
+            return sb.toString();
+        }
+    }
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/23026#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Sun, 27 Aug 2023 13:01:09 UTC"
 record: -1
