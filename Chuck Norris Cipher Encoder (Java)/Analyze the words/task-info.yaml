@@ -56,9 +56,9 @@ files:
 - name: src/chucknorris/Util.java
   visible: true
   learner_created: true
-feedback_link: https://hyperskill.org/projects/293/stages/1536/implement#comment
+feedback_link: https://hyperskill.org/learn/step/23024#comment
 status: Solved
 feedback:
   message: Congratulations!
   time: "Fri, 25 Aug 2023 20:10:24 UTC"
-record: -1
+record: 1

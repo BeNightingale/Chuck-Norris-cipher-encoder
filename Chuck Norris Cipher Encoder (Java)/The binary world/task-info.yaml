@@ -81,6 +81,40 @@ files:
       }
     }
   learner_created: false
-feedback_link: https://hyperskill.org/projects/293/stages/1537/implement#comment
-status: Unchecked
+- name: src/chucknorris/Util.java
+  visible: true
+  text: |
+    package chucknorris;
+
+    import java.util.Arrays;
+    import java.util.Scanner;
+
+    public class Util {
+        private Util() {
+            // nothing
+        }
+
+        public static String scanInput() {
+            System.out.println("Input string:");
+            Scanner scanner = new Scanner(System.in);
+            return scanner.nextLine();
+        }
+
+        public static String parseInputToSigns(String input) {
+            final String[] signs = input.split("");
+            final StringBuilder sb = new StringBuilder();
+            Arrays.stream(signs).forEach(x -> sb.append(x).append(" "));
+            sb.deleteCharAt(sb.length() - 1);
+            return sb.toString();
+        }
+    }
+  learner_created: true
+- name: src/chucknorris/Parser.java
+  visible: true
+  learner_created: true
+feedback_link: https://hyperskill.org/learn/step/23025#comment
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Sat, 26 Aug 2023 21:30:09 UTC"
 record: -1
