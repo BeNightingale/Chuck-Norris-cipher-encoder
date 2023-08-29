@@ -2,6 +2,7 @@ package chucknorris;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class Parser {
 
@@ -17,11 +18,22 @@ public class Parser {
      * @param input a String which user wants to encrypt
      * @return encrypted String
      */
-
-    public static String encryptByChuckNorrisCipher(String input) {
+    public static String encryptWithChuckNorrisCipher(String input) {
         final List<String> binary7sList = convertStringIntoBinary7sList(input);
         final String binariesConcatenated = String.join("", binary7sList);
         return parseBinariesToChuckBlock(binariesConcatenated);
+    }
+
+    public static String decryptChuckNorrisCipher(String encryptedMessage) {
+        final List<DigitBlock> digitBlocksList = parseEncryptedMessageToDigitBlocksList(encryptedMessage);
+        final StringBuilder sb = new StringBuilder();
+        digitBlocksList.forEach(db -> sb.append(db.getDigit().repeat(db.digitsCount)));
+        // pociąć na siódemki
+        final List<String> sevens = new ArrayList<>();//znaki w systemie dwójkowym
+        for (int i = 0; i < sb.length(); i += 7) {
+            sevens.add(sb.substring(i, i + 7));
+        }
+        return parseBinarySevensListToStringMessage(sevens);
     }
 
     private static List<String> convertStringIntoBinary7sList(String input) {
@@ -74,5 +86,45 @@ public class Parser {
         }
         sb.append("0".repeat(counter));
         return counter;
+    }
+
+    private static List<DigitBlock> parseEncryptedMessageToDigitBlocksList(String encryptedMessage) {
+        final String[] blocks = encryptedMessage.split(" ");
+        final List<DigitBlock> digitBlocksList = new ArrayList<>();
+        for (int i = 0; i < blocks.length; i += 2) {
+            digitBlocksList.add(
+                    new DigitBlock(
+                            "0".equals(blocks[i]) ? "1" : "0",
+                            blocks[i + 1].length())
+            );
+        }
+        return digitBlocksList;
+    }
+
+    private static String parseBinarySevensListToStringMessage(List<String> sevens) {
+        StringBuilder sb = new StringBuilder();
+        sevens.stream()
+                .map(sev -> {
+                            final String[] digitsArray = sev.split("");
+                            final int len = digitsArray.length;
+                            final List<Integer> intValues = new ArrayList<>();
+                            IntStream.rangeClosed(0, 6)
+                                    .forEach(i -> intValues.add(Integer.parseInt(digitsArray[len - i - 1]) * powerOfNumTwo(i)));
+                            return intValues.stream().mapToInt(d -> d).sum();
+                        }
+                )
+                .mapToInt(i -> i)
+                .mapToObj(i -> (char) i)
+                .forEach(sb::append);
+        return sb.toString();
+    }
+
+    // only for i >= 0
+    private static int powerOfNumTwo(int n) {
+        if (n == 0)
+            return 1;
+        if (n < 0)
+            throw new RuntimeException("Exponent cannot be negative");
+        return 2 * powerOfNumTwo(n - 1);
     }
 }
