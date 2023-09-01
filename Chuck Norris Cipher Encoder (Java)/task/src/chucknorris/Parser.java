@@ -6,6 +6,8 @@ import java.util.stream.IntStream;
 
 public class Parser {
 
+    private static final String ERROR_ENCODED_MESSAGE_INVALID = "Encoded string is not valid.";
+
     private Parser() {
         // do nothing
     }
@@ -24,12 +26,30 @@ public class Parser {
         return parseBinariesToChuckBlock(binariesConcatenated);
     }
 
+    /**
+     * Method decrypts message encrypted with Chuck Norris cipher:
+     * firstly divides an encrypted string into pairs of zeros blocks (parsed into a list of DigitBlocks -
+     * each object represents 0 and zeros count or 1 and ones count);
+     * the list is converted into one string of zeroes and ones;
+     * this string is cut into 7-digit-long parts;
+     * each part is converted into an integer number (as its binary representation);
+     * an integer number represents a char in ASCII
+     *
+     * @param encryptedMessage a string message encrypted with Chuck Norris cipher
+     * @return a string encrypted message
+     */
     public static String decryptChuckNorrisCipher(String encryptedMessage) {
+        if (encryptedMessage == null || encryptedMessage.isEmpty() || encryptedMessage.matches(".*1.*")) {
+            throw new EncodedFormatException(ERROR_ENCODED_MESSAGE_INVALID + "1");
+        }
         final List<DigitBlock> digitBlocksList = parseEncryptedMessageToDigitBlocksList(encryptedMessage);
         final StringBuilder sb = new StringBuilder();
         digitBlocksList.forEach(db -> sb.append(db.getDigit().repeat(db.digitsCount)));
         // pociąć na siódemki
-        final List<String> sevens = new ArrayList<>();//znaki w systemie dwójkowym
+        if (sb.length() % 7 != 0) {
+            throw new EncodedFormatException(ERROR_ENCODED_MESSAGE_INVALID + "2");
+        }
+        final List<String> sevens = new ArrayList<>(); // chars in binary system
         for (int i = 0; i < sb.length(); i += 7) {
             sevens.add(sb.substring(i, i + 7));
         }
@@ -90,11 +110,18 @@ public class Parser {
 
     private static List<DigitBlock> parseEncryptedMessageToDigitBlocksList(String encryptedMessage) {
         final String[] blocks = encryptedMessage.split(" ");
+        if (blocks.length % 2 != 0) {
+            throw new EncodedFormatException(ERROR_ENCODED_MESSAGE_INVALID + "3");
+        }
         final List<DigitBlock> digitBlocksList = new ArrayList<>();
         for (int i = 0; i < blocks.length; i += 2) {
             digitBlocksList.add(
                     new DigitBlock(
-                            "0".equals(blocks[i]) ? "1" : "0",
+                            switch (blocks[i]) {
+                                case "0" -> "1";
+                                case "00" -> "0";
+                                default -> throw new EncodedFormatException(ERROR_ENCODED_MESSAGE_INVALID + "4");
+                            },
                             blocks[i + 1].length())
             );
         }
@@ -124,7 +151,7 @@ public class Parser {
         if (n == 0)
             return 1;
         if (n < 0)
-            throw new RuntimeException("Exponent cannot be negative");
+            throw new IllegalArgumentException("Exponent cannot be negative");
         return 2 * powerOfNumTwo(n - 1);
     }
 }
